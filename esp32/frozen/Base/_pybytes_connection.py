@@ -58,8 +58,11 @@ class PybytesConnection:
                     print(line)
 
     def __initialise_watchdog(self):
-        self.__wifi_lte_watchdog = WDT(timeout=constants.__WDT_TIMEOUT_MILLISECONDS)
-        print_debug(1, 'Initialed watchdog for WiFi and LTE connection with timeout {} ms'.format(constants.__WDT_TIMEOUT_MILLISECONDS))
+        if self.__conf.get('connection_watchdog'):
+            self.__wifi_lte_watchdog = WDT(timeout=constants.__WDT_TIMEOUT_MILLISECONDS)
+            print('Initialized watchdog for WiFi and LTE connection with timeout {} ms'.format(constants.__WDT_TIMEOUT_MILLISECONDS))
+        else:
+            print('Watchdog for WiFi and LTE was disabled, enable with "connection_watchdog": true in pybytes_config.json')
 
     # Establish a connection through WIFI before connecting to mqtt server
     def connect_wifi(self, reconnect=True, check_interval=0.5):
