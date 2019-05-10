@@ -58,7 +58,7 @@ class PybytesConnection:
                     print(line)
 
     def __initialise_watchdog(self):
-        if self.__conf.get('connection_watchdog'):
+        if self.__conf.get('connection_watchdog', True):
             self.__wifi_lte_watchdog = WDT(timeout=constants.__WDT_TIMEOUT_MILLISECONDS)
             print('Initialized watchdog for WiFi and LTE connection with timeout {} ms'.format(constants.__WDT_TIMEOUT_MILLISECONDS))
         else:

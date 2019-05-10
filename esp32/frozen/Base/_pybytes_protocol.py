@@ -37,7 +37,6 @@ import time
 import socket
 import struct
 import machine
-import binascii
 
 class PybytesProtocol:
     def __init__(self, config, message_callback, pybytes_connection):
@@ -136,7 +135,7 @@ class PybytesProtocol:
             if (message_type == constants.__TYPE_PING):
                 self.send_ping_message()
 
-            elif message_type == constants.__TYPE_PONG:
+            elif message_type == constants.__TYPE_PONG and self.__conf.get('connection_watchdog'):
                 print_debug(1,'message type pong received, feeding watchdog...')
                 self.__pybytes_connection.__wifi_lte_watchdog.feed()
 
@@ -339,7 +338,7 @@ class PybytesProtocol:
         try:
             finalTopic = self.__mqtt_upload_topic if topic is None else self.__mqtt_upload_topic + "/" + topic
 
-            print_debug(2, "Sending message:[{}] with topic:[{}] and finalTopic: [{}]".format(binascii.hexlify(message), topic, finalTopic))
+            print_debug(2, "Sending message:[{}] with topic:[{}] and finalTopic: [{}]".format(message, topic, finalTopic))
             if self.__wifi_or_lte_connection():
                 self.__pybytes_connection.__connection.publish(finalTopic, message)
             elif (self.__pybytes_connection.__connection_status == constants.__CONNECTION_STATUS_CONNECTED_LORA):
@@ -397,13 +396,14 @@ class PybytesProtocol:
         if (not pin_number in self.__pins):
             self.__configure_digital_pin(pin_number, Pin.IN, pull_mode)
         pin = self.__pins[pin_number]
-        self.send_pybytes_custom_method_values(pin_number, [pin()])
+        self.__send_pybytes_message(constants.__COMMAND_DIGITAL_WRITE, pin_number, pin())
 
     def send_pybytes_analog_value(self, pin_number):
         if (not pin_number in self.__pins):
             self.__configure_analog_pin(pin_number)
         pin = self.__pins[pin_number]
-        self.send_pybytes_custom_method_values(pin_number, [pin()])
+
+        self.__send_pybytes_message(constants.__COMMAND_ANALOG_WRITE, pin_number, pin())
 
 
     def send_pybytes_custom_method_values(self, method_id, parameters):
