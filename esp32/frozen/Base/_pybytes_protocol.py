@@ -135,7 +135,7 @@ class PybytesProtocol:
             if (message_type == constants.__TYPE_PING):
                 self.send_ping_message()
 
-            elif message_type == constants.__TYPE_PONG and self.__conf.get('connection_watchdog'):
+            elif message_type == constants.__TYPE_PONG and self.__conf.get('connection_watchdog', True):
                 print_debug(1,'message type pong received, feeding watchdog...')
                 self.__pybytes_connection.__wifi_lte_watchdog.feed()
 
