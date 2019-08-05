@@ -1,9 +1,19 @@
+'''
+Copyright (c) 2019, Pycom Limited.
+This software is licensed under the GNU GPL version 3 or any
+later version, with permitted additional terms. For more information
+see the Pycom Licence v1.0 document supplied with this file, or
+available at https://www.pycom.io/opensource/licensing
+'''
+
 import os
 from machine import Timer
+
 try:
     from pybytes_connection import PybytesConnection
 except:
     from _pybytes_connection import PybytesConnection
+
 try:
     from pybytes_debug import print_debug
 except:
@@ -255,7 +265,7 @@ class Pybytes:
         self.set_config('dump_ca', dump_ca, permanent=False)
         if ca_file is not None:
             self.set_config('ssl_params', {'ca_certs': ca_file}, permanent=False)
-        self.set_config('ssl', True, permanent=True, silent=True)
+        self.set_config('ssl', True, silent=True)
         print('Please reset your module to apply the new settings.')
 
     def dump_ca(self, ca_file='/flash/cert/pycom-ca.pem'):
