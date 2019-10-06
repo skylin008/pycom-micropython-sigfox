@@ -6,6 +6,10 @@ see the Pycom Licence v1.0 document supplied with this file, or
 available at https://www.pycom.io/opensource/licensing
 '''
 
+import sys
+import pycom
+
+
 class MQTTConstants:
     # - Protocol types
     MQTTv3_1 = 3
@@ -55,8 +59,6 @@ class constants:
     __CONNECTION_STATUS_CONNECTED_LORA = 3
     __CONNECTION_STATUS_CONNECTED_SIGFOX = 4
 
-    __PROTOCOL_VERSION = 0x04
-
     __TYPE_PING = 0x00
     __TYPE_INFO = 0x01
     __TYPE_NETWORK_INFO = 0x02
@@ -66,6 +68,8 @@ class constants:
     __TYPE_FCOTA = 0x06
     __TYPE_PONG = 0x07
     __TYPE_PYBYTES = 0x0E
+    __TYPE_RELEASE_INFO = 0x0B
+    __TYPE_RELEASE_DEPLOY = 0x0A
     __PYBYTES_PROTOCOL = ">B%ds"
     __PYBYTES_PROTOCOL_PING = ">B"
     __PYBYTES_INTERNAL_PROTOCOL = ">BBH"
@@ -110,3 +114,18 @@ See all available zone options for RC at https://support.sigfox.com/docs/radio-c
     __KEEP_ALIVE_PING_INTERVAL = 600  # in seconds
     # set watch dog timeout to 21 minutes ~ (2 * 10) + 1
     __WDT_TIMEOUT_MILLISECONDS = (2 * __KEEP_ALIVE_PING_INTERVAL + __ONE_MINUTE) * 1000 # noqa
+
+    __WDT_MAX_TIMEOUT_MILLISECONDS = sys.maxsize
+
+    try:
+        __DEFAULT_DOMAIN = pycom.nvs_get('pybytes_domain', 'pybytes.pycom.io')
+    except:
+        __DEFAULT_DOMAIN = 'pybytes.pycom.io'
+    try:
+        __DEFAULT_SW_HOST = pycom.nvs_get('pybytes_sw_host', 'software.pycom.io')
+    except:
+        __DEFAULT_SW_HOST = 'software.pycom.io'
+    try:
+        __DEFAULT_PYCONFIG_DOMAIN = pycom.nvs_get('pyconfig_host', 'pyconfig.eu-central-1.elasticbeanstalk.com')
+    except:
+        __DEFAULT_PYCONFIG_DOMAIN = 'pyconfig.eu-central-1.elasticbeanstalk.com'

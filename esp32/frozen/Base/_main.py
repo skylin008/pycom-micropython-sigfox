@@ -1,5 +1,11 @@
 
 '''
+Copyright (c) 2019, Pycom Limited.
+This software is licensed under the GNU GPL version 3 or any
+later version, with permitted additional terms. For more information
+see the Pycom Licence v1.0 document supplied with this file, or
+available at https://www.pycom.io/opensource/licensing
+
 This is the main.py file for Pybytes
 This code and included libraries are intended for users wishing to fully
 customise pybytes. It is the same code that is included in the Pybytes firmware
@@ -21,49 +27,23 @@ configuration before connecting to Pybytes manually using pybytes.connect()
 if 'pybytes_config' not in globals().keys():
     try:
         from pybytes_config import PybytesConfig
-        frozen = False
-        try:
-            from pybytes import Pybytes
-        except:
-            frozen = True
     except:
         from _pybytes_config import PybytesConfig
-        frozen = True
+    try:
+        from pybytes import Pybytes
+    except:
+        from _pybytes import Pybytes
 
     pybytes_config = PybytesConfig().read_config()
 
-# Load Pybytes if it is not already loaded
-if 'pybytes' not in globals().keys() and pybytes_config.get('pybytes_autostart', True):
-    if frozen:
-        try:
-            from _pybytes import Pybytes
-        except:
-            raise ImportError("Unable to load Pybytes. Please check your code...")
-
-    pybytes = Pybytes(pybytes_config)
-    pybytes.print_cfg_msg()
-    pybytes.connect()
-
-elif not pybytes_config.get('pybytes_autostart', True) and pybytes_config.get('cfg_msg') is not None:
+if (not pybytes_config.get('pybytes_autostart', True)) and pybytes_config.get('cfg_msg') is not None:
     print(pybytes_config.get('cfg_msg'))
     print("Not starting Pybytes as auto-start is disabled")
 
-del pybytes_config
-del frozen
-del PybytesConfig
-
-if 'pybytes' in globals().keys():
-    if pybytes.is_connected():
-
-        print("Now starting user code in main.py")
-        '''
-        If Pybytes isn't connected at this time, it means you either deliberately
-        disabled Pybytes auto-start, or something went wrong.
-        This could be reading the configuration or establishing a connection.
-
-        To connect to Pybytes manually when auto-start is disabled, please call:
-        pybytes.connect()
-        '''
+else:
+    # Load Pybytes if it is not already loaded
+    if 'pybytes' not in globals().keys():
+        pybytes = Pybytes(pybytes_config, pybytes_config.get('cfg_msg') is None, True)
 
         # Please put your USER code below this line
 

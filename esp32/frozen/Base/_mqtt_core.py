@@ -9,6 +9,7 @@ see the Pycom Licence v1.0 document supplied with this file, or
 available at https://www.pycom.io/opensource/licensing
 '''
 
+
 try:
     from msg_handl import MsgHandler as msgHandler
 except:
@@ -244,10 +245,13 @@ class MQTTCore:
 
         return False
 
-    def disconnect(self):
+    def disconnect(self, force=False):
         pkt = struct.pack('!BB', mqttConst.MSG_DISCONNECT, 0)
-        self._msgHandler.push_on_send_queue(pkt)
-        time.sleep(self._connectdisconnectTimeout)
+        if force:
+            self._msgHandler.priority_send(pkt)
+        else:
+            self._msgHandler.push_on_send_queue(pkt)
+            time.sleep(self._connectdisconnectTimeout)
         self._msgHandler.disconnect()
         return True
 
