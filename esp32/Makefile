@@ -72,6 +72,10 @@ endif
 
 FROZEN_MPY_DIR = frozen
 
+MICROPY_PY_BTREE = 1
+
+GIT_SUBMODULES = lib/berkeley-db-1.xx
+
 include ../py/mkenv.mk
 
 CROSS_COMPILE = xtensa-esp32-elf-

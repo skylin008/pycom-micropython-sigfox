@@ -751,9 +751,9 @@ class NPyProgrammer(object):
         return self.set_pybytes_config(new_config_block, force_update=True)
 
     def print_cb(self, config_block):
-	if DEBUG:
-	    for x in range(0, 30):
-                print(binascii.hexlify(config_block[x * 32:x * 32 + 32]))
+        if DEBUG:
+            for x in range(0, 30):
+                    print(binascii.hexlify(config_block[x * 32:x * 32 + 32]))
             
     def set_pybytes_config(self, config_block, userid=None, device_token=None, mqttServiceAddress=None, network_preferences=None, extra_preferences=None, force_update=None, auto_start=None):
         config_block = config_block.ljust(int(PARTITIONS.get('config')[1], 16), b'\x00')

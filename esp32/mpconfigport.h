@@ -117,8 +117,10 @@
 #define MICROPY_QSTR_EXTRA_POOL                     mp_qstr_frozen_const_pool
 #define MICROPY_PY_FRAMEBUF                         (1)
 #define MICROPY_PY_UZLIB                            (1)
+#define MICROPY_PY_BTREE                            (1)
 
 #define MICROPY_STREAMS_NON_BLOCK                   (1)
+#define MICROPY_STREAMS_POSIX_API                   (1)
 #define MICROPY_PY_BUILTINS_TIMEOUTERROR            (1)
 #define MICROPY_PY_ALL_SPECIAL_METHODS              (1)
 

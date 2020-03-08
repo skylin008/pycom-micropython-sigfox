@@ -81,6 +81,7 @@ APP_INC += -I$(ESP_IDF_COMP_PATH)/mdns/include
 APP_INC += -I../lib/mp-readline
 APP_INC += -I../lib/netutils
 APP_INC += -I../lib/oofatfs
+APP_INC += -I../lib//berkeley-db-1.xx/PORT/include
 APP_INC += -I../lib
 APP_INC += -I../drivers/sx127x
 APP_INC += -I../ports/stm32
@@ -93,6 +94,8 @@ APP_MAIN_SRC_C = \
 	fatfs_port.c \
 	pycom_config.c \
 	mpthreadport.c \
+	../extmod/modbtree.c \
+
 
 APP_HAL_SRC_C = $(addprefix hal/,\
 	esp32_mphal.c \
