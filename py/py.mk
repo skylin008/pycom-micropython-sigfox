@@ -104,7 +104,8 @@ endif
 ifeq ($(MICROPY_PY_BTREE),1)
 BTREE_DIR = lib/berkeley-db-1.xx
 BTREE_DEFS = -D__DBINTERFACE_PRIVATE=1 -Dmpool_error=printf -Dabort=abort_ "-Dvirt_fd_t=void*" $(BTREE_DEFS_EXTRA)
-INC += -I$(BTREE_DIR)/PORT/include
+INC += -I$(TOP)/$(BTREE_DIR)/PORT/include
+SRC_MOD += extmod/modbtree.c
 SRC_MOD += $(addprefix $(BTREE_DIR)/,\
 btree/bt_close.c \
 btree/bt_conv.c \
@@ -120,10 +121,6 @@ btree/bt_seq.c \
 btree/bt_split.c \
 btree/bt_utils.c \
 mpool/mpool.c \
-	)
-
-SRC_MOD += $(addprefix extmod/,\
-modbtree.c \
 	)
 CFLAGS_MOD += -DMICROPY_PY_BTREE=1
 # we need to suppress certain warnings to get berkeley-db to compile cleanly
