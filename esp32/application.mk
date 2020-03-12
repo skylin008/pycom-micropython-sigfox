@@ -81,7 +81,6 @@ APP_INC += -I$(ESP_IDF_COMP_PATH)/mdns/include
 APP_INC += -I../lib/mp-readline
 APP_INC += -I../lib/netutils
 APP_INC += -I../lib/oofatfs
-APP_INC += -I../lib//berkeley-db-1.xx/PORT/include
 APP_INC += -I../lib
 APP_INC += -I../drivers/sx127x
 APP_INC += -I../ports/stm32
@@ -94,7 +93,42 @@ APP_MAIN_SRC_C = \
 	fatfs_port.c \
 	pycom_config.c \
 	mpthreadport.c \
-	../extmod/modbtree.c \
+
+################################################################################
+# btree
+
+ifeq ($(MICROPY_PY_BTREE), 1)
+BTREE_DIR = lib/berkeley-db-1.xx
+BTREE_DEFS = -D__DBINTERFACE_PRIVATE=1 -Dmpool_error=printf -Dabort=abort_ "-Dvirt_fd_t=void*" $(BTREE_DEFS_EXTRA)
+APP_INC += -I../lib/berkeley-db-1.xx/PORT/include
+
+APP_BTREE_SRC_C = $(addprefix $(BTREE_DIR)/,\
+	btree/bt_close.c \
+	btree/bt_conv.c \
+	btree/bt_debug.c \
+	btree/bt_delete.c \
+	btree/bt_get.c \
+	btree/bt_open.c \
+	btree/bt_overflow.c \
+	btree/bt_page.c \
+	btree/bt_put.c \
+	btree/bt_search.c \
+	btree/bt_seq.c \
+	btree/bt_split.c \
+	btree/bt_utils.c \
+	mpool/mpool.c \
+	)
+
+APP_BTREE_MOD_SRC_C = $(addprefix extmod/,\
+	modbtree.c \
+	)
+
+CFLAGS += -DMICROPY_PY_BTREE=1
+# we need to suppress certain warnings to get berkeley-db to compile cleanly
+# and we have separate BTREE_DEFS so the definitions don't interfere with other source code
+$(BTREE_DIR)/btree/%.o: CFLAGS += -Wno-old-style-definition -Wno-sign-compare -Wno-unused-parameter $(BTREE_DEFS)
+$(BTREE_DIR)/modbtree.o: CFLAGS += $(BTREE_DEFS)
+endif
 
 
 APP_HAL_SRC_C = $(addprefix hal/,\
@@ -347,6 +381,10 @@ OBJ += $(addprefix $(BUILD)/, $(APP_FATFS_SRC_C:.c=.o) $(APP_LITTLEFS_SRC_C:.c=.
 OBJ += $(addprefix $(BUILD)/, $(APP_FTP_SRC_C:.c=.o) $(APP_CAN_SRC_C:.c=.o))
 OBJ += $(BUILD)/pins.o
 
+ifeq ($(MICROPY_PY_BTREE), 1)
+OBJ += $(addprefix $(BUILD)/, $(APP_BTREE_SRC_C:.c=.o) $(APP_BTREE_MOD_SRC_C:.c=.o))
+endif
+
 BOOT_OBJ = $(addprefix $(BUILD)/, $(BOOT_SRC_C:.c=.o))
 
 # List of sources for qstr extraction
@@ -366,6 +404,11 @@ ifeq ($(BOARD), $(filter $(BOARD), LOPY LOPY4 FIPY))
 SRC_QSTR += $(APP_MOD_MESH_SRC_C)
 endif
 endif # ifeq ($(OPENTHREAD), on)
+
+ifeq ($(MICROPY_PY_BTREE), 1)
+# SRC_QSTR += lib/berkeley-db-1.xx/modbtree.c
+SRC_QSTR += $(APP_BTREE_MOD_SRC_C)
+endif
 
 # Append any auto-generated sources that are needed by sources listed in
 # SRC_QSTR
