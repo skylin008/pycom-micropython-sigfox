@@ -70,7 +70,7 @@ static esp_err_t updater_spi_flash_write(size_t dest_addr, void *src, size_t siz
 bool updater_read_boot_info (boot_info_t *boot_info, uint32_t *boot_info_offset) {
     esp_partition_info_t partition_info[PARTITIONS_COUNT_4MB];
 
-    uint8_t part_count = (esp32_get_chip_rev() > 0 ? PARTITIONS_COUNT_8MB : PARTITIONS_COUNT_4MB);
+    uint8_t part_count = (spi_flash_get_chip_size() > (4* 1024 * 1024) ? PARTITIONS_COUNT_8MB : PARTITIONS_COUNT_4MB);
 
     ESP_LOGV(TAG, "Reading boot info\n");
 
@@ -100,7 +100,7 @@ bool updater_check_path (void *path) {
 
 bool updater_start (void) {
 
-    updater_data.size = (esp32_get_chip_rev() > 0 ? IMG_SIZE_8MB : IMG_SIZE_4MB);
+    updater_data.size = (spi_flash_get_chip_size() > (4* 1024 * 1024) ? IMG_SIZE_8MB : IMG_SIZE_4MB);
     // check which one should be the next active image
     updater_data.offset = updater_ota_next_slot_address();
 
@@ -245,7 +245,7 @@ bool updater_write_boot_info(boot_info_t *boot_info, uint32_t boot_info_offset) 
 
 int updater_ota_next_slot_address() {
 
-    int ota_offset = (esp32_get_chip_rev() > 0 ? IMG_UPDATE1_OFFSET_8MB : IMG_UPDATE1_OFFSET_4MB);
+    int ota_offset = (spi_flash_get_chip_size() > (4* 1024 * 1024) ? IMG_UPDATE1_OFFSET_8MB : IMG_UPDATE1_OFFSET_4MB);
 
     // check which one should be the next active image
     if (updater_read_boot_info (&boot_info, &boot_info_offset)) {
@@ -258,7 +258,7 @@ int updater_ota_next_slot_address() {
             }
             else
             {
-                ota_offset = (esp32_get_chip_rev() > 0 ? IMG_UPDATE1_OFFSET_8MB : IMG_UPDATE1_OFFSET_4MB);
+                ota_offset = (spi_flash_get_chip_size() > (4* 1024 * 1024) ? IMG_UPDATE1_OFFSET_8MB : IMG_UPDATE1_OFFSET_4MB);
             }
         }
         else
@@ -266,7 +266,7 @@ int updater_ota_next_slot_address() {
             if(boot_info.ActiveImg == IMG_ACT_FACTORY)
 
             {
-                ota_offset = (esp32_get_chip_rev() > 0 ? IMG_UPDATE1_OFFSET_8MB : IMG_UPDATE1_OFFSET_4MB);
+                ota_offset = (spi_flash_get_chip_size() > (4* 1024 * 1024) ? IMG_UPDATE1_OFFSET_8MB : IMG_UPDATE1_OFFSET_4MB);
             }
             else
             {
